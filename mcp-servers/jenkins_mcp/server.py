@@ -10,10 +10,15 @@ Auth: 用戶名 + API Token（Basic Auth）
 import base64
 import json
 import os
+from pathlib import Path
 from typing import Any, Optional
+from dotenv import load_dotenv
 from pydantic import BaseModel, Field, ConfigDict
 import httpx
 from mcp.server.fastmcp import FastMCP
+
+# ── 載入 .env（從 mcp-servers/ 根目錄讀取，環境變數優先）────────────────────
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # ── 設定 ─────────────────────────────────────────────────────────────────────
 JENKINS_URL       = os.environ.get("JENKINS_URL", "").rstrip("/")

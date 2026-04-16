@@ -8,10 +8,15 @@ Auth: Personal Access Token (PAT)
 
 import json
 import os
+from pathlib import Path
 from typing import Any, Optional
+from dotenv import load_dotenv
 from pydantic import BaseModel, Field, ConfigDict
 import httpx
 from mcp.server.fastmcp import FastMCP
+
+# ── 載入 .env（從 mcp-servers/ 根目錄讀取，環境變數優先）────────────────────
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # ── 設定 ─────────────────────────────────────────────────────────────────────
 JIRA_BASE_URL = os.environ.get("JIRA_BASE_URL", "").rstrip("/")
