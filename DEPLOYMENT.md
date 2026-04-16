@@ -101,7 +101,25 @@ powershell -ExecutionPolicy Bypass -File scripts\setup-env.ps1
 3. 自動產生 `.env` 檔
 4. 自動產生 `my_cline_settings.json`（可直接貼入 Cline）
 
-#### Step 4：測試連線
+#### Step 4：安裝 Superpowers 框架（選用但推薦）
+
+Superpowers 提供完整的 AI 開發流程框架（brainstorming → TDD → code review → 完成）。
+
+```bash
+# Claude Code（官方 Marketplace）
+/plugin install superpowers@claude-plugins-official
+
+# Claude Code（Plugin Marketplace）
+/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace
+
+# Cursor
+/add-plugin superpowers
+```
+
+> 詳細說明見 [mcp-servers/skills/README.md](mcp-servers/skills/README.md)
+
+#### Step 5：測試連線
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\test-connection.ps1
@@ -512,5 +530,6 @@ BB_PAT="ATATT3xF...=1526544D"
 | 套件清單 | [`mcp-servers/requirements.txt`](mcp-servers/requirements.txt) | Python 套件清單 |
 | MCP Server 說明 | [`mcp-servers/README.md`](mcp-servers/README.md) | MCP Server 技術文件 |
 | 安裝指引 | [`mcp-servers/SETUP.md`](mcp-servers/SETUP.md) | MCP Server 安裝指引 |
-| Skill 範例 | [`mcp-servers/skills/`](mcp-servers/skills/) | 三個 Skill 範例 |
+| Skill 說明 | [`mcp-servers/skills/README.md`](mcp-servers/skills/README.md) | Skills 總覽 + Superpowers 安裝指引 |
+| Skill 範例 | [`mcp-servers/skills/`](mcp-servers/skills/) | 5 個自訂 Skill |
 | USB 離線包 | [`usb_package/`](usb_package/) | Python/Git 安裝檔 + 離線套件 |
