@@ -159,12 +159,46 @@ Agent ：查 job 狀態（紅燈）
 
 ---
 
+## 部署與安裝
+
+完整部署指南請參考 [DEPLOYMENT.md](DEPLOYMENT.md)。
+
+### PowerShell 一鍵腳本（Windows）
+
+在 `mcp-servers` 目錄下執行：
+
+```powershell
+# 1. 一鍵安裝（檢查 Python、安裝套件、驗證語法）
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1
+
+# 2. 互動式設定 .env（支援 Cloud / Data Center，自動產生 Cline 設定）
+powershell -ExecutionPolicy Bypass -File scripts\setup-env.ps1
+
+# 3. 測試三個 MCP Server 連線
+powershell -ExecutionPolicy Bypass -File scripts\test-connection.ps1
+
+# 4. 跑全部測試
+powershell -ExecutionPolicy Bypass -File scripts\run-all-tests.ps1
+```
+
+### 相關文件
+
+| 文件 | 說明 |
+|------|------|
+| [DEPLOYMENT.md](DEPLOYMENT.md) | 完整部署指南（事前準備、安裝、測試、分發、離線安裝、FAQ） |
+| [mcp-servers/scripts/](mcp-servers/scripts/) | PowerShell 自動化腳本 |
+| [mcp-servers/SETUP.md](mcp-servers/SETUP.md) | MCP Server 安裝指引 |
+| [mcp-servers/.env.example](mcp-servers/.env.example) | 環境變數範本 |
+| [usb_package/](usb_package/) | USB 離線安裝包 |
+
+---
+
 ## 技術規格
 
 - **Python**: 3.10+
 - **MCP 傳輸**: stdio（不需開 port）
 - **HTTP Client**: httpx（非同步）
 - **認證方式**:
-  - Jira / BitBucket: PAT Bearer Token
+  - Jira / BitBucket: PAT Bearer Token（DC）或 Email/User + API Token（Cloud）
   - Jenkins: Basic Auth + CSRF crumb 自動處理
 - **測試框架**: pytest + pytest-asyncio

@@ -1,154 +1,211 @@
-# 部署指南 — Windows 環境 + VSCode + Cline
+# 部署指南 — Nova MCP Servers 完整安裝與設定
 
-本文件說明如何在客戶的 Windows 電腦上部署 MCP Server，讓所有學員可以使用。
+本文件是 Nova MCP Servers 的完整部署指南，涵蓋從事前準備到學員分發的所有步驟。
 
 ---
 
-## 一、事前準備（你要先確認的事）
+## 目錄
 
-### 客戶端需要的資訊
+- [一、事前準備清單](#一事前準備清單)
+- [二、完整安裝流程](#二完整安裝流程)
+- [三、設定認證資訊](#三設定認證資訊)
+- [四、測試流程](#四測試流程)
+- [五、學員分發方式](#五學員分發方式)
+- [六、離線安裝方式](#六離線安裝方式)
+- [七、課堂時間安排建議](#七課堂時間安排建議)
+- [八、常見問題排除](#八常見問題排除)
+- [九、相關文件目錄](#九相關文件目錄)
 
-在去之前，跟客戶確認：
+---
 
-| 項目 | 需要什麼 | 誰提供 |
-|------|---------|--------|
-| **Jira URL** | `http://jira.novatek.com` 或類似 | 客戶 IT |
-| **Jira PAT** | 每位學員自己建，或 IT 提供一組共用的 | 客戶 IT |
-| **BitBucket URL** | `http://bitbucket.novatek.com` | 客戶 IT |
-| **BitBucket PAT** | 同上 | 客戶 IT |
-| **Jenkins URL** | `http://jenkins.novatek.com` | 客戶 IT |
-| **Jenkins User + API Token** | 同上 | 客戶 IT |
-| **Python 版本** | 3.10 以上，確認已安裝 | 客戶 IT |
-| **網路** | 電腦能連到 Jira / BB / Jenkins | 客戶 IT |
-| **Cline API Key** | 聯詠內部 API 或 Anthropic Key | 客戶 / 你 |
+## 一、事前準備清單
+
+### 需要跟客戶 MIS/IT 確認的事項
+
+| 項目 | 需要什麼 | 誰提供 | 備註 |
+|------|---------|--------|------|
+| **Jira URL** | `http://jira.company.com` 或 `https://xxx.atlassian.net` | 客戶 IT | 確認是 Data Center 還是 Cloud |
+| **Jira 認證** | PAT（DC）或 Email + API Token（Cloud） | 客戶 IT / 學員 | 見下方說明 |
+| **BitBucket URL** | `http://bitbucket.company.com` 或 `https://api.bitbucket.org/2.0` | 客戶 IT | 同上 |
+| **BitBucket 認證** | PAT（DC）或 Username + API Token（Cloud） | 客戶 IT / 學員 | 見下方說明 |
+| **Jenkins URL** | `http://jenkins.company.com` | 客戶 IT | 只有 Basic Auth |
+| **Jenkins 認證** | Username + API Token | 客戶 IT / 學員 | |
+| **Python 版本** | 3.10 以上 | 客戶 IT | 確認已安裝並加入 PATH |
+| **網路** | 電腦能連到 Jira / BitBucket / Jenkins | 客戶 IT | VPN、防火牆 |
+| **Cline API Key** | Anthropic Key 或內部 API | 客戶 / 講師 | |
+
+### 認證方式對照
+
+| 系統 | Data Center（公司自建） | Cloud（SaaS） |
+|------|----------------------|--------------|
+| **Jira** | `JIRA_PAT`（Bearer Token） | `JIRA_EMAIL` + `JIRA_API_TOKEN`（Basic Auth） |
+| **BitBucket** | `BB_PAT`（Bearer Token） | `BB_USER` + `BB_API_TOKEN`（Basic Auth） |
+| **Jenkins** | `JENKINS_USER` + `JENKINS_API_TOKEN`（Basic Auth） | 同左 |
 
 ### 你要帶的東西
 
-- [ ] 本 repo 的 zip 或 USB（萬一 git clone 不通）
-- [ ] Python 3.10+ 安裝檔（萬一客戶電腦沒裝）
-- [ ] 這份 DEPLOYMENT.md（印出來或存手機）
+- [ ] 本 repo 的 zip 或 USB 隨身碟
+- [ ] Python 3.11 安裝檔（`usb_package/python-3.11.9-amd64.exe`）
+- [ ] Git 安裝檔（`usb_package/Git-Windows-amd64.exe`）
+- [ ] 離線 pip 套件（`usb_package/packages-win/` 或 `mcp-servers/packages-win/`）
+- [ ] 這份 DEPLOYMENT.md
 
 ---
 
-## 二、安裝步驟（每台電腦）
+## 二、完整安裝流程
 
-### Step 1：取得程式碼
+### 方式 A：使用 PowerShell 一鍵安裝（推薦）
+
+#### Step 1：取得程式碼
 
 ```powershell
-# 方式 A：git clone（如果有 git）
+# git clone（如果有 git）
 git clone https://github.com/ywchiu/nova_ai.git
 cd nova_ai\mcp-servers
 
-# 方式 B：解壓縮 zip
-# 把 USB 裡的 nova_ai.zip 解壓到 C:\Users\學員\nova_ai
+# 或解壓縮 USB 裡的 zip
+# 解壓 usb_package\nova_ai.zip 到 C:\Users\學員\nova_ai
 cd C:\Users\學員\nova_ai\mcp-servers
 ```
 
-### Step 2：安裝 Python 套件
+#### Step 2：一鍵安裝
 
 ```powershell
-# 確認 Python 版本
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1
+```
+
+這個腳本會自動：
+1. 檢查 Python 版本（3.10+）
+2. 安裝 pip 套件（先試線上，失敗自動嘗試離線 `packages-win/`）
+3. 驗證三個 server.py 語法正確
+
+#### Step 3：設定認證
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup-env.ps1
+```
+
+互動式精靈會：
+1. 詢問 Cloud 還是 Data Center
+2. 依選擇提示輸入對應的認證資訊
+3. 自動產生 `.env` 檔
+4. 自動產生 `my_cline_settings.json`（可直接貼入 Cline）
+
+#### Step 4：測試連線
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\test-connection.ps1
+```
+
+顯示三個 MCP Server 的連線結果表格。
+
+### 方式 B：手動安裝
+
+如果 PowerShell 腳本有問題，可以手動執行：
+
+```powershell
+# 確認 Python
 python --version
 
 # 安裝套件
 pip install -r requirements.txt
-```
 
-> **注意**：Windows 用 `python`（不是 `python3`）
-
-### Step 3：確認語法正確
-
-```powershell
+# 語法檢查
 python -m py_compile jira_mcp\server.py
 python -m py_compile bitbucket_mcp\server.py
 python -m py_compile jenkins_mcp\server.py
+
+# 建立 .env
+copy .env.example .env
+notepad .env    # 手動填入認證資訊
 ```
 
-沒有輸出 = 正確。
-
-### Step 4：建立 .env
+### 方式 C：使用 setup_student.bat（舊版批次檔）
 
 ```powershell
-copy .env.example .env
-notepad .env
+setup_student.bat
 ```
 
-填入客戶的實際值：
-
-```ini
-# Data Center（聯詠內部）
-JIRA_BASE_URL=http://jira.novatek.com
-JIRA_PAT=學員的PAT
-
-BB_BASE_URL=http://bitbucket.novatek.com
-BB_PAT=學員的PAT
-
-JENKINS_URL=http://jenkins.novatek.com
-JENKINS_USER=學員帳號
-JENKINS_API_TOKEN=學員的token
-```
-
-> **Token 含 `=` 號時要加雙引號**：`BB_PAT="ATATT3xF...=1526544D"`
-
-### Step 5：設定 Cline MCP
-
-1. 開啟 VSCode
-2. `Ctrl+Shift+P` → 輸入 `Cline: Open MCP Settings`
-3. 貼入以下設定（**替換路徑**）：
-
-```json
-{
-  "mcpServers": {
-    "jira": {
-      "command": "python",
-      "args": ["C:\\Users\\學員\\nova_ai\\mcp-servers\\jira_mcp\\server.py"],
-      "env": {
-        "JIRA_BASE_URL": "http://jira.novatek.com",
-        "JIRA_PAT": "學員的PAT"
-      }
-    },
-    "bitbucket": {
-      "command": "python",
-      "args": ["C:\\Users\\學員\\nova_ai\\mcp-servers\\bitbucket_mcp\\server.py"],
-      "env": {
-        "BB_BASE_URL": "http://bitbucket.novatek.com",
-        "BB_PAT": "學員的PAT"
-      }
-    },
-    "jenkins": {
-      "command": "python",
-      "args": ["C:\\Users\\學員\\nova_ai\\mcp-servers\\jenkins_mcp\\server.py"],
-      "env": {
-        "JENKINS_URL": "http://jenkins.novatek.com",
-        "JENKINS_USER": "學員帳號",
-        "JENKINS_API_TOKEN": "學員的token"
-      }
-    }
-  }
-}
-```
-
-4. 存檔 → Cline 自動重啟 MCP servers
-5. 左下角應該顯示三個 MCP server 為綠色
-
-> **Windows 路徑注意**：用 `\\` 雙反斜線，或改用 `/` 正斜線都可以
+> **注意**：`setup_student.bat` 只支援 Data Center 模式，Cloud 請用 `scripts\setup-env.ps1`。
 
 ---
 
-## 三、測試流程（確認全部通）
+## 三、設定認證資訊
 
-### 快速測試腳本
+### Data Center 模式
 
-在 `mcp-servers` 目錄下跑：
+`.env` 檔內容：
+
+```ini
+# Jira（Data Center）
+JIRA_BASE_URL=http://jira.company.com
+JIRA_PAT=你的Jira_PAT
+
+# BitBucket（Data Center）
+BB_BASE_URL=http://bitbucket.company.com
+BB_PAT=你的BitBucket_PAT
+
+# Jenkins
+JENKINS_URL=http://jenkins.company.com
+JENKINS_USER=你的帳號
+JENKINS_API_TOKEN=你的Jenkins_Token
+```
+
+### Cloud 模式
+
+```ini
+# Jira（Cloud）
+JIRA_BASE_URL=https://your-site.atlassian.net
+JIRA_EMAIL=your-email@company.com
+JIRA_API_TOKEN=你的Jira_API_Token
+
+# BitBucket（Cloud）
+BB_BASE_URL=https://api.bitbucket.org/2.0
+BB_USER=your-username
+BB_API_TOKEN=你的BitBucket_App_Password
+
+# Jenkins
+JENKINS_URL=http://jenkins.company.com
+JENKINS_USER=你的帳號
+JENKINS_API_TOKEN=你的Jenkins_Token
+```
+
+> **重要**：Token 含 `=` 號時要加雙引號，例如：`BB_PAT="ATATT3xF...=1526544D"`
+
+### 設定 Cline MCP
+
+1. 開啟 VSCode
+2. `Ctrl+Shift+P` → 輸入 `Cline: Open MCP Settings`
+3. 貼入 `my_cline_settings.json` 的內容（由 `setup-env.ps1` 自動產生）
+4. 存檔 → Cline 自動重啟 MCP Servers
+5. 左下角應該顯示三個 MCP Server 為綠色
+
+> **Windows 路徑注意**：JSON 裡用 `\\` 雙反斜線或 `/` 正斜線。Windows 用 `python`（不是 `python3`）。
+
+---
+
+## 四、測試流程
+
+### 自動化測試（推薦）
 
 ```powershell
-# 測試 Jira 連線
+# 連線測試（快速確認三個 Server 都通）
+powershell -ExecutionPolicy Bypass -File scripts\test-connection.ps1
+
+# 完整測試（跑所有 pytest 測試）
+powershell -ExecutionPolicy Bypass -File scripts\run-all-tests.ps1
+```
+
+### 手動快速測試
+
+```powershell
+# 測試 Jira
 python -c "import asyncio; from jira_mcp.server import jira_list_projects; print(asyncio.run(jira_list_projects()))"
 
-# 測試 BitBucket 連線
-python -c "import asyncio; from bitbucket_mcp.server import bitbucket_list_repos, ListReposInput; print(asyncio.run(bitbucket_list_repos(ListReposInput(project_key='NOVA'))))"
+# 測試 BitBucket
+python -c "import asyncio; from bitbucket_mcp.server import bitbucket_list_repos, ListReposInput; print(asyncio.run(bitbucket_list_repos(ListReposInput())))"
 
-# 測試 Jenkins 連線
+# 測試 Jenkins
 python -c "import asyncio; from jenkins_mcp.server import jenkins_list_jobs, ListJobsInput; print(asyncio.run(jenkins_list_jobs(ListJobsInput())))"
 ```
 
@@ -156,39 +213,23 @@ python -c "import asyncio; from jenkins_mcp.server import jenkins_list_jobs, Lis
 
 ### 在 Cline 裡測試
 
-開啟 Cline 對話框，依序輸入：
+開啟 Cline 對話框，依序測試：
 
 ```
 列出所有 Jira 專案
 ```
-→ 應回傳專案清單
 
 ```
 列出 Jenkins 的所有 jobs
 ```
-→ 應回傳 job 清單
 
 ```
 列出 NOVA 專案的 BitBucket repos
 ```
-→ 應回傳 repo 清單（project key 依客戶實際情況調整）
-
-### 完整測試（用 pytest）
-
-```powershell
-# 如果客戶有 pytest
-pip install pytest pytest-asyncio
-
-# 跑 Jira 測試
-python -m pytest jira_mcp\test_server.py -v -k "查詢"
-
-# 跑 Jenkins 測試（需要 Jenkins 有測試 jobs）
-python -m pytest jenkins_mcp\test_server.py -v -k "查詢"
-```
 
 ---
 
-## 四、讓所有學員都能用
+## 五、學員分發方式
 
 ### 方案 A：每人獨立 Token（推薦）
 
@@ -196,8 +237,10 @@ python -m pytest jenkins_mcp\test_server.py -v -k "查詢"
 
 | 系統 | 建立位置 |
 |------|---------|
-| Jira | Profile → Personal Access Tokens → Create token |
-| BitBucket | Manage Account → HTTP Access Tokens → Create token |
+| Jira DC | Profile → Personal Access Tokens → Create token |
+| Jira Cloud | https://id.atlassian.com/manage-profile/security/api-tokens |
+| BitBucket DC | Manage Account → HTTP Access Tokens → Create token |
+| BitBucket Cloud | https://bitbucket.org/account/settings/app-passwords/ |
 | Jenkins | 帳號 → Configure → API Token → Add new Token |
 
 **優點**：權限獨立、可追蹤誰做了什麼
@@ -208,7 +251,6 @@ python -m pytest jenkins_mcp\test_server.py -v -k "查詢"
 IT 建一組共用的唯讀帳號，所有學員共用：
 
 ```ini
-# 所有學員共用這組
 JIRA_PAT=IT提供的共用token
 BB_PAT=IT提供的共用token
 JENKINS_USER=training
@@ -216,39 +258,88 @@ JENKINS_API_TOKEN=IT提供的共用token
 ```
 
 **優點**：設定快，5 分鐘搞定全班
-**缺點**：無法追蹤個人操作、共用帳號安全風險較高
+**缺點**：無法追蹤個人操作、安全風險
 
-### 方案 C：課堂快速部署腳本
+### 方案 C：課堂快速部署
 
-建立一個批次檔，讓學員一鍵設定：
+1. 安裝完畢後，每位學員執行：
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File scripts\setup-env.ps1
+   ```
+2. 依指示輸入自己的 Token
+3. 把產生的 `my_cline_settings.json` 貼入 Cline
 
-```bat
-@echo off
-echo === Nova MCP Setup ===
+---
 
-set /p STUDENT_NAME="請輸入你的名字: "
-set /p JIRA_PAT="請貼上你的 Jira PAT: "
-set /p BB_PAT="請貼上你的 BitBucket PAT: "
-set /p JENKINS_USER="請輸入 Jenkins 帳號: "
-set /p JENKINS_TOKEN="請貼上 Jenkins API Token: "
+## 六、離線安裝方式
 
-echo JIRA_BASE_URL=http://jira.novatek.com > .env
-echo JIRA_PAT=%JIRA_PAT% >> .env
-echo BB_BASE_URL=http://bitbucket.novatek.com >> .env
-echo BB_PAT=%BB_PAT% >> .env
-echo JENKINS_URL=http://jenkins.novatek.com >> .env
-echo JENKINS_USER=%JENKINS_USER% >> .env
-echo JENKINS_API_TOKEN=%JENKINS_TOKEN% >> .env
+適用於客戶網路不通或有嚴格防火牆的環境。
 
-echo.
-echo === .env 建立完成 ===
-echo 接下來請設定 Cline MCP Settings
-pause
+### USB 離線安裝包內容
+
+```
+usb_package/
+├── python-3.11.9-amd64.exe    # Python 安裝檔
+├── Git-Windows-amd64.exe      # Git 安裝檔
+├── packages-win/              # pip 離線套件（36 個 .whl）
+└── nova_ai.zip                # 完整專案壓縮檔
+```
+
+### 離線安裝步驟
+
+1. **安裝 Python**（如果沒有）：
+   ```
+   執行 usb_package\python-3.11.9-amd64.exe
+   勾選「Add Python to PATH」→ Install
+   ```
+
+2. **安裝 Git**（如果沒有）：
+   ```
+   執行 usb_package\Git-Windows-amd64.exe
+   全部預設 → Install
+   ```
+
+3. **解壓專案**：
+   ```
+   解壓 usb_package\nova_ai.zip 到 C:\Users\學員\nova_ai
+   ```
+
+4. **安裝 pip 套件（離線）**：
+   ```powershell
+   cd C:\Users\學員\nova_ai\mcp-servers
+   pip install --no-index --find-links=..\usb_package\packages-win -r requirements.txt
+   ```
+   或直接執行 `scripts\install.ps1`，它會自動偵測離線套件目錄。
+
+5. **設定認證**：
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File scripts\setup-env.ps1
+   ```
+
+### 準備離線套件（講師事前準備）
+
+在有網路的電腦上執行：
+
+```powershell
+# 下載 Windows amd64 的 wheel 檔
+pip download -r requirements.txt -d packages-win --platform win_amd64 --python-version 3.11 --only-binary=:all:
 ```
 
 ---
 
-## 五、常見問題排除
+## 七、課堂時間安排建議
+
+| 時間 | 動作 | 備註 |
+|------|------|------|
+| 課前 30 分 | 確認講師電腦全部通 | 跑 `scripts\test-connection.ps1` |
+| 課前 15 分 | 學員裝 Python + `scripts\install.ps1` | 可以先寫在白板 |
+| M5 開始時 | 學員執行 `scripts\setup-env.ps1` | 互動式設定，2 分鐘搞定 |
+| M6 開始時 | 在 Cline 裡測試三個連線 | 確認全班都綠燈 |
+| 需要時 | 跑完整測試 `scripts\run-all-tests.ps1` | 83 個測試 |
+
+---
+
+## 八、常見問題排除
 
 ### Python 找不到
 
@@ -258,7 +349,18 @@ pause
 
 → Python 沒裝或沒加入 PATH。
 → 解法：`控制台 → 系統 → 環境變數 → Path → 加入 Python 安裝路徑`
-→ 或用完整路徑：`C:\Python310\python.exe`
+→ 或用完整路徑：`C:\Python311\python.exe`
+
+### PowerShell 執行政策限制
+
+```
+無法載入檔案，因為在此系統上停用了指令碼執行
+```
+
+→ 用這個指令執行：
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1
+```
 
 ### pip install 失敗（公司防火牆）
 
@@ -266,26 +368,18 @@ pause
 Could not fetch URL https://pypi.org/...
 ```
 
-→ 公司可能有 proxy 或內部 PyPI mirror
 → 問 IT 拿 proxy 設定：
 ```powershell
-pip install -r requirements.txt --proxy http://proxy.novatek.com:8080
+pip install -r requirements.txt --proxy http://proxy.company.com:8080
 ```
-→ 或事先在 USB 裡準備好 wheel 檔：
-```powershell
-# 你在有網路的電腦先下載
-pip download -r requirements.txt -d packages/
-
-# 學員電腦離線安裝
-pip install --no-index --find-links=packages/ -r requirements.txt
-```
+→ 或用離線安裝（見[六、離線安裝方式](#六離線安裝方式)）
 
 ### Cline MCP Server 紅燈
 
 → 先在終端機手動測試：
 ```powershell
-set JIRA_BASE_URL=http://jira.novatek.com
-set JIRA_PAT=你的token
+$env:JIRA_BASE_URL = "http://jira.company.com"
+$env:JIRA_PAT = "你的token"
 python jira_mcp\server.py
 ```
 → 看錯誤訊息，通常是 token 錯或 URL 不通
@@ -298,31 +392,35 @@ python jira_mcp\server.py
 
 ### Token 含 = 號導致認證失敗
 
-→ 在 .env 裡用雙引號包起來：
+→ 在 `.env` 裡用雙引號包起來：
 ```ini
 BB_PAT="ATATT3xF...=1526544D"
 ```
 
----
+### 離線備案（網路完全不通）
 
-## 六、課堂時間安排建議
-
-| 時間 | 動作 | 備註 |
-|------|------|------|
-| 課前 30 分 | 確認講師電腦全部通 | 跑快速測試腳本 |
-| 課前 15 分 | 學員裝 Python + pip install | 可以先寫在白板 |
-| M5 開始時 | 學員設定 .env + Cline | 用方案 C 批次檔最快 |
-| M6 開始時 | 在 Cline 裡測試三個連線 | 確認全班都綠燈 |
-
----
-
-## 七、離線備案
-
-如果客戶網路完全不通（最壞情況）：
-
-1. **用你的筆電 demo** — 連你自己的 Jira Cloud + BitBucket Cloud
+1. **用講師筆電 demo** — 連自己的 Jira Cloud + BitBucket Cloud
 2. **錄一段操作影片** — 事先錄好完整 demo 流程
 3. **用 MCP Inspector** — 本機可以跑，不需要連外部系統：
    ```powershell
    npx @modelcontextprotocol/inspector python jira_mcp\server.py
    ```
+
+---
+
+## 九、相關文件目錄
+
+| 文件 | 路徑 | 說明 |
+|------|------|------|
+| 安裝腳本 | [`mcp-servers/scripts/install.ps1`](mcp-servers/scripts/install.ps1) | 一鍵安裝 Python 套件 + 語法驗證 |
+| 設定腳本 | [`mcp-servers/scripts/setup-env.ps1`](mcp-servers/scripts/setup-env.ps1) | 互動式產生 .env + Cline 設定 |
+| 連線測試 | [`mcp-servers/scripts/test-connection.ps1`](mcp-servers/scripts/test-connection.ps1) | 測試三個 MCP Server 連線 |
+| 全部測試 | [`mcp-servers/scripts/run-all-tests.ps1`](mcp-servers/scripts/run-all-tests.ps1) | 跑全部 pytest 測試 |
+| 學員批次檔 | [`mcp-servers/setup_student.bat`](mcp-servers/setup_student.bat) | 舊版 .bat 設定（僅 DC） |
+| 環境變數範本 | [`mcp-servers/.env.example`](mcp-servers/.env.example) | .env 範本 |
+| MCP 設定範本 | [`mcp-servers/cline_mcp_settings.json`](mcp-servers/cline_mcp_settings.json) | Cline MCP 設定範本 |
+| 套件清單 | [`mcp-servers/requirements.txt`](mcp-servers/requirements.txt) | Python 套件清單 |
+| MCP Server 說明 | [`mcp-servers/README.md`](mcp-servers/README.md) | MCP Server 技術文件 |
+| 安裝指引 | [`mcp-servers/SETUP.md`](mcp-servers/SETUP.md) | MCP Server 安裝指引 |
+| Skill 範例 | [`mcp-servers/skills/`](mcp-servers/skills/) | 三個 Skill 範例 |
+| USB 離線包 | [`usb_package/`](usb_package/) | Python/Git 安裝檔 + 離線套件 |
