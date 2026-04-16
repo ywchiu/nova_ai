@@ -136,6 +136,7 @@ pip3 install -r requirements.txt
 | `jenkins_get_queue` | 查看目前 build queue |
 | `jenkins_cancel_build` | 終止正在執行的 build |
 | `jenkins_get_nodes` | 查看所有 agent nodes 狀態 |
+| `jenkins_get_job_config` | 取得 job 的 config.xml（Pipeline 設定）|
 
 ---
 
