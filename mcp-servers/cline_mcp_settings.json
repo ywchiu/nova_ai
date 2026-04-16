@@ -1,0 +1,35 @@
+{
+  "mcpServers": {
+    "jira": {
+      "command": "python3",
+      "args": ["/絕對路徑/mcp-servers/jira_mcp/server.py"],
+      "env": {
+        "JIRA_BASE_URL": "http://jira.company.com",
+        "JIRA_PAT": "在這裡貼上你的 Jira PAT"
+      },
+      "disabled": false,
+      "alwaysAllow": []
+    },
+    "bitbucket": {
+      "command": "python3",
+      "args": ["/絕對路徑/mcp-servers/bitbucket_mcp/server.py"],
+      "env": {
+        "BB_BASE_URL": "http://bitbucket.company.com",
+        "BB_PAT": "在這裡貼上你的 BitBucket PAT"
+      },
+      "disabled": false,
+      "alwaysAllow": []
+    },
+    "jenkins": {
+      "command": "python3",
+      "args": ["/絕對路徑/mcp-servers/jenkins_mcp/server.py"],
+      "env": {
+        "JENKINS_URL": "http://jenkins.company.com",
+        "JENKINS_USER": "你的帳號",
+        "JENKINS_API_TOKEN": "在這裡貼上你的 Jenkins API Token"
+      },
+      "disabled": false,
+      "alwaysAllow": []
+    }
+  }
+}

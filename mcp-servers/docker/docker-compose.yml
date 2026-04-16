@@ -1,0 +1,97 @@
+version: "3.8"
+
+# ── 本機測試環境：Jira 9.12.2 + BitBucket 8.19.8 + Jenkins ──────────────────
+#
+# 啟動：docker compose up -d
+# 停止：docker compose down
+# 完全清除（含資料）：docker compose down -v
+#
+# 服務 URL：
+#   Jira      → http://localhost:8080
+#   BitBucket → http://localhost:7990
+#   Jenkins   → http://localhost:9090
+#
+# 記憶體需求：至少 6GB（Jira 2G + BitBucket 1.5G + Jenkins 512M + PostgreSQL 512M）
+
+services:
+
+  # ── PostgreSQL：Jira 和 BitBucket 共用，分開 database ──────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: nova-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: nova1234
+      POSTGRES_MULTIPLE_DATABASES: jiradb,bitbucketdb   # 用下方 init script 建立
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      - ./init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── Jira 9.12.2 ─────────────────────────────────────────────────────────────
+  jira:
+    image: atlassian/jira-software:9.12.2
+    container_name: nova-jira
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ATL_JDBC_URL: jdbc:postgresql://postgres:5432/jiradb
+      ATL_JDBC_USER: jira
+      ATL_JDBC_PASSWORD: jira1234
+      ATL_DB_DRIVER: org.postgresql.Driver
+      ATL_DB_TYPE: postgres72
+      JVM_MINIMUM_MEMORY: 512m
+      JVM_MAXIMUM_MEMORY: 2048m
+      ATL_PROXY_NAME: localhost
+      ATL_PROXY_PORT: 8080
+      ATL_TOMCAT_SCHEME: http
+    volumes:
+      - ./jira-data:/var/atlassian/application-data/jira
+    ports:
+      - "8080:8080"
+
+  # ── BitBucket 8.19.8 ─────────────────────────────────────────────────────────
+  bitbucket:
+    image: atlassian/bitbucket:8.19.8
+    container_name: nova-bitbucket
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      JDBC_DRIVER: org.postgresql.Driver
+      JDBC_URL: jdbc:postgresql://postgres:5432/bitbucketdb
+      JDBC_USER: bitbucket
+      JDBC_PASSWORD: bitbucket1234
+      JVM_MINIMUM_MEMORY: 512m
+      JVM_MAXIMUM_MEMORY: 1536m
+      SERVER_PROXY_NAME: localhost
+      SERVER_PROXY_PORT: 7990
+      SERVER_SCHEME: http
+      SERVER_SECURE: "false"
+    volumes:
+      - ./bitbucket-data:/var/atlassian/application-data/bitbucket
+    ports:
+      - "7990:7990"
+
+  # ── Jenkins ──────────────────────────────────────────────────────────────────
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: nova-jenkins
+    restart: unless-stopped
+    user: root                        # 讓 jenkins 可以存取 docker socket（選用）
+    environment:
+      JAVA_OPTS: "-Xmx512m"
+    volumes:
+      - ./jenkins-data:/var/jenkins_home
+    ports:
+      - "9090:8080"
+      - "50000:50000"                 # Jenkins agent 連接埠

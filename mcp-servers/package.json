@@ -1,0 +1,13 @@
+{
+  "name": "nova-mcp-servers",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev:jira": "npm run dev --workspace=packages/jira",
+    "dev:bitbucket": "npm run dev --workspace=packages/bitbucket",
+    "dev:jenkins": "npm run dev --workspace=packages/jenkins"
+  }
+}
