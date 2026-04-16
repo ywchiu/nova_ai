@@ -57,6 +57,35 @@ mcp = FastMCP("jira_mcp")
 
 # ── 共用工具函數 ──────────────────────────────────────────────────────────────
 
+def _to_adf(text: str) -> dict:
+    """將純文字轉換為 Atlassian Document Format（Cloud v3 必須用 ADF）"""
+    return {
+        "version": 1,
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [{"type": "text", "text": text}],
+            }
+        ],
+    }
+
+
+def _from_adf(doc: Any) -> str:
+    """將 ADF 文件轉回純文字（簡易版，取所有 text node）"""
+    if isinstance(doc, str):
+        return doc
+    if not isinstance(doc, dict):
+        return str(doc) if doc else ""
+    texts = []
+    for block in doc.get("content", []):
+        for inline in block.get("content", []):
+            if inline.get("type") == "text":
+                texts.append(inline.get("text", ""))
+        texts.append("\n")
+    return "".join(texts).strip()
+
+
 async def jira_request(method: str, path: str, params: dict | None = None, body: dict | None = None) -> Any:
     """所有 Jira API 呼叫的統一入口，包含錯誤處理。"""
     url = f"{API_BASE}{path}"
@@ -139,19 +168,34 @@ async def jira_get_issue(params: GetIssueInput) -> str:
     try:
         issue = await jira_request("GET", f"/issue/{params.issue_key}")
         f = issue["fields"]
+        # description: Cloud v3 回傳 ADF，Data Center 回傳純文字
+        desc = f.get("description")
+        if IS_CLOUD and isinstance(desc, dict):
+            desc = _from_adf(desc)
+        # comment: Cloud v3 結構可能不同
+        comment_data = f.get("comment")
+        if isinstance(comment_data, dict):
+            comments_count = comment_data.get("total", comment_data.get("count", 0))
+        else:
+            comments_count = 0
+        # sprint: customfield 可能不存在
+        sprint_list = f.get("customfield_10020")
+        sprint_name = None
+        if isinstance(sprint_list, list) and sprint_list:
+            sprint_name = (sprint_list[0] or {}).get("name")
         return json.dumps({
             "key":         issue["key"],
             "summary":     f.get("summary"),
-            "status":      f.get("status", {}).get("name"),
-            "priority":    f.get("priority", {}).get("name"),
+            "status":      (f.get("status") or {}).get("name"),
+            "priority":    (f.get("priority") or {}).get("name"),
             "assignee":    (f.get("assignee") or {}).get("displayName", "未指派"),
             "reporter":    (f.get("reporter") or {}).get("displayName"),
             "created":     f.get("created"),
             "updated":     f.get("updated"),
-            "description": f.get("description"),
+            "description": desc,
             "labels":      f.get("labels", []),
-            "comments":    f.get("comment", {}).get("total", 0),
-            "sprint":      ((f.get("customfield_10020") or [{}])[0]).get("name"),
+            "comments":    comments_count,
+            "sprint":      sprint_name,
         }, ensure_ascii=False, indent=2)
     except Exception as e:
         return handle_error(e)
@@ -202,7 +246,8 @@ async def jira_create_issue(params: CreateIssueInput) -> str:
             "summary":   params.summary,
             "issuetype": {"name": params.issue_type},
         }
-        if params.description: fields["description"] = params.description
+        if params.description:
+            fields["description"] = _to_adf(params.description) if IS_CLOUD else params.description
         if params.priority:    fields["priority"]    = {"name": params.priority}
         if params.assignee:
             # Cloud 用 accountId，Data Center 用 name
@@ -241,7 +286,8 @@ async def jira_update_issue(params: UpdateIssueInput) -> str:
 async def jira_add_comment(params: AddCommentInput) -> str:
     """在 Jira issue 新增留言（支援 Jira wiki markup）。"""
     try:
-        result = await jira_request("POST", f"/issue/{params.issue_key}/comment", body={"body": params.body})
+        comment_body = _to_adf(params.body) if IS_CLOUD else params.body
+        result = await jira_request("POST", f"/issue/{params.issue_key}/comment", body={"body": comment_body})
         return f"留言新增成功，ID: {result.get('id')}"
     except Exception as e:
         return handle_error(e)
@@ -268,7 +314,8 @@ async def jira_transition_issue(params: TransitionIssueInput) -> str:
     try:
         body: dict[str, Any] = {"transition": {"id": params.transition_id}}
         if params.comment:
-            body["update"] = {"comment": [{"add": {"body": params.comment}}]}
+            comment_body = _to_adf(params.comment) if IS_CLOUD else params.comment
+            body["update"] = {"comment": [{"add": {"body": comment_body}}]}
         await jira_request("POST", f"/issue/{params.issue_key}/transitions", body=body)
         return f"{params.issue_key} 狀態轉換成功"
     except Exception as e:
