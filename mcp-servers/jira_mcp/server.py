@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """
-MCP Server for Jira 9.12.2 (Data Center / Self-hosted)
+MCP Server for Jira（同時支援 Data Center 和 Cloud）
 
-Auth: Personal Access Token (PAT)
-取得方式: Jira → 右上角頭像 → Profile → Personal Access Tokens → Create token
+Data Center 認證：Personal Access Token (PAT)
+  → 設定 JIRA_BASE_URL + JIRA_PAT
+
+Cloud 認證：Email + API Token（Basic Auth）
+  → 設定 JIRA_BASE_URL + JIRA_EMAIL + JIRA_API_TOKEN
+  → API Token 取得：https://id.atlassian.com/manage-profile/security/api-tokens
 """
 
+import base64
 import json
 import os
 from pathlib import Path
@@ -19,15 +24,32 @@ from mcp.server.fastmcp import FastMCP
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # ── 設定 ─────────────────────────────────────────────────────────────────────
-JIRA_BASE_URL = os.environ.get("JIRA_BASE_URL", "").rstrip("/")
-JIRA_PAT      = os.environ.get("JIRA_PAT", "")
+JIRA_BASE_URL   = os.environ.get("JIRA_BASE_URL", "").rstrip("/")
+JIRA_PAT        = os.environ.get("JIRA_PAT", "")
+JIRA_EMAIL      = os.environ.get("JIRA_EMAIL", "")
+JIRA_API_TOKEN  = os.environ.get("JIRA_API_TOKEN", "")
 
-if not JIRA_BASE_URL or not JIRA_PAT:
-    raise RuntimeError("請設定環境變數 JIRA_BASE_URL 和 JIRA_PAT")
+# 自動偵測：有 EMAIL + API_TOKEN → Cloud（Basic Auth）；有 PAT → Data Center（Bearer）
+if JIRA_EMAIL and JIRA_API_TOKEN:
+    _auth_str = base64.b64encode(f"{JIRA_EMAIL}:{JIRA_API_TOKEN}".encode()).decode()
+    _auth_header = f"Basic {_auth_str}"
+    _mode = "Cloud"
+elif JIRA_PAT:
+    _auth_header = f"Bearer {JIRA_PAT}"
+    _mode = "Data Center"
+else:
+    raise RuntimeError(
+        "請設定 Jira 認證：\n"
+        "  Cloud：JIRA_BASE_URL + JIRA_EMAIL + JIRA_API_TOKEN\n"
+        "  Data Center：JIRA_BASE_URL + JIRA_PAT"
+    )
+
+if not JIRA_BASE_URL:
+    raise RuntimeError("請設定 JIRA_BASE_URL（例如 https://xxx.atlassian.net）")
 
 API_BASE = f"{JIRA_BASE_URL}/rest/api/2"
 HEADERS  = {
-    "Authorization": f"Bearer {JIRA_PAT}",
+    "Authorization": _auth_header,
     "Content-Type":  "application/json",
     "Accept":        "application/json",
 }
@@ -46,10 +68,13 @@ async def jira_request(method: str, path: str, params: dict | None = None, body:
         return resp.json() if resp.text else {}
 
 
+IS_CLOUD = "atlassian.net" in JIRA_BASE_URL
+
+
 def handle_error(e: Exception) -> str:
     if isinstance(e, httpx.HTTPStatusError):
         code = e.response.status_code
-        if code == 401: return "錯誤：PAT 驗證失敗，請確認 JIRA_PAT 是否正確。"
+        if code == 401: return "錯誤：驗證失敗，請確認認證資訊是否正確。"
         if code == 403: return "錯誤：沒有權限，請確認帳號有存取此資源的權限。"
         if code == 404: return "錯誤：找不到資源，請確認 issue key 或 project key 是否正確。"
         return f"錯誤：Jira API 回傳 {code}，{e.response.text[:200]}"
@@ -181,7 +206,9 @@ async def jira_create_issue(params: CreateIssueInput) -> str:
         }
         if params.description: fields["description"] = params.description
         if params.priority:    fields["priority"]    = {"name": params.priority}
-        if params.assignee:    fields["assignee"]    = {"name": params.assignee}
+        if params.assignee:
+            # Cloud 用 accountId，Data Center 用 name
+            fields["assignee"] = {"accountId": params.assignee} if IS_CLOUD else {"name": params.assignee}
         if params.labels:      fields["labels"]      = params.labels
 
         result = await jira_request("POST", "/issue", body={"fields": fields})
@@ -201,7 +228,10 @@ async def jira_update_issue(params: UpdateIssueInput) -> str:
         if params.priority    is not None: fields["priority"]    = {"name": params.priority}
         if params.labels      is not None: fields["labels"]      = params.labels
         if params.assignee    is not None:
-            fields["assignee"] = {"name": params.assignee} if params.assignee else None
+            if params.assignee:
+                fields["assignee"] = {"accountId": params.assignee} if IS_CLOUD else {"name": params.assignee}
+            else:
+                fields["assignee"] = None
 
         await jira_request("PUT", f"/issue/{params.issue_key}", body={"fields": fields})
         return f"成功更新 {params.issue_key}"
