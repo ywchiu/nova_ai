@@ -40,7 +40,7 @@ async def jenkins_request(method: str, path: str, params: dict | None = None, da
     """所有 Jenkins API 呼叫的統一入口。"""
     url = path if path.startswith("http") else f"{JENKINS_URL}{path}"
     headers = {**HEADERS, **(extra_headers or {})}
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
         resp = await client.request(method, url, headers=headers, params=params, content=data)
         if not resp.is_success:
             raise httpx.HTTPStatusError(f"Jenkins {resp.status_code}: {resp.text[:300]}", request=resp.request, response=resp)
@@ -154,9 +154,9 @@ async def jenkins_get_job(params: JobPathInput) -> str:
             "buildable":    data.get("buildable"),
             "color":        data.get("color"),
             "healthReport": data.get("healthReport", [{}])[0].get("description") if data.get("healthReport") else None,
-            "lastBuild":    data.get("lastBuild", {}).get("number"),
-            "lastSuccess":  data.get("lastSuccessfulBuild", {}).get("number"),
-            "lastFailed":   data.get("lastFailedBuild", {}).get("number"),
+            "lastBuild":    (data.get("lastBuild") or {}).get("number"),
+            "lastSuccess":  (data.get("lastSuccessfulBuild") or {}).get("number"),
+            "lastFailed":   (data.get("lastFailedBuild") or {}).get("number"),
             "recentBuilds": [b["number"] for b in (data.get("builds") or [])[:10]],
         }, ensure_ascii=False, indent=2)
     except Exception as e:
@@ -299,6 +299,18 @@ async def jenkins_get_nodes() -> str:
             }
             for n in data.get("computer", [])
         ], ensure_ascii=False, indent=2)
+    except Exception as e:
+        return handle_error(e)
+
+
+@mcp.tool(name="jenkins_get_job_config")
+async def jenkins_get_job_config(params: JobPathInput) -> str:
+    """取得 Jenkins job 的 config.xml（Pipeline script、參數定義、觸發條件等完整設定）。
+    用途：讓 AI 理解 Pipeline 的結構、修改建議、或產生新的 Pipeline script。
+    """
+    try:
+        xml = await jenkins_request("GET", f"/job/{_encode_job_path(params.job_path)}/config.xml")
+        return str(xml)
     except Exception as e:
         return handle_error(e)
 
