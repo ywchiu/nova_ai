@@ -33,10 +33,8 @@ JIRA_API_TOKEN  = os.environ.get("JIRA_API_TOKEN", "")
 if JIRA_EMAIL and JIRA_API_TOKEN:
     _auth_str = base64.b64encode(f"{JIRA_EMAIL}:{JIRA_API_TOKEN}".encode()).decode()
     _auth_header = f"Basic {_auth_str}"
-    _mode = "Cloud"
 elif JIRA_PAT:
     _auth_header = f"Bearer {JIRA_PAT}"
-    _mode = "Data Center"
 else:
     raise RuntimeError(
         "請設定 Jira 認證：\n"
@@ -47,7 +45,8 @@ else:
 if not JIRA_BASE_URL:
     raise RuntimeError("請設定 JIRA_BASE_URL（例如 https://xxx.atlassian.net）")
 
-API_BASE = f"{JIRA_BASE_URL}/rest/api/2"
+IS_CLOUD = "atlassian.net" in JIRA_BASE_URL
+API_BASE = f"{JIRA_BASE_URL}/rest/api/3" if IS_CLOUD else f"{JIRA_BASE_URL}/rest/api/2"
 HEADERS  = {
     "Authorization": _auth_header,
     "Content-Type":  "application/json",
@@ -67,8 +66,6 @@ async def jira_request(method: str, path: str, params: dict | None = None, body:
             raise httpx.HTTPStatusError(f"Jira {resp.status_code}: {resp.text}", request=resp.request, response=resp)
         return resp.json() if resp.text else {}
 
-
-IS_CLOUD = "atlassian.net" in JIRA_BASE_URL
 
 
 def handle_error(e: Exception) -> str:
@@ -170,22 +167,23 @@ async def jira_search_issues(params: SearchIssuesInput) -> str:
     - sprint in openSprints() AND priority=High
     """
     try:
-        data = await jira_request("GET", "/search", params={
+        search_path = "/search/jql" if IS_CLOUD else "/search"
+        data = await jira_request("GET", search_path, params={
             "jql": params.jql, "maxResults": params.max_results,
             "startAt": params.start_at,
             "fields": "summary,status,assignee,priority,updated",
         })
         return json.dumps({
-            "total":      data.get("total"),
-            "startAt":    data.get("startAt"),
-            "maxResults": data.get("maxResults"),
+            "total":      data.get("total", len(data.get("issues", []))),
+            "startAt":    data.get("startAt", params.start_at),
+            "maxResults": data.get("maxResults", params.max_results),
             "issues": [
                 {
                     "key":      i["key"],
                     "summary":  i["fields"].get("summary"),
-                    "status":   i["fields"].get("status", {}).get("name"),
+                    "status":   (i["fields"].get("status") or {}).get("name"),
                     "assignee": (i["fields"].get("assignee") or {}).get("displayName", "未指派"),
-                    "priority": i["fields"].get("priority", {}).get("name"),
+                    "priority": (i["fields"].get("priority") or {}).get("name"),
                     "updated":  i["fields"].get("updated"),
                 }
                 for i in data.get("issues", [])
@@ -295,19 +293,20 @@ async def jira_get_sprint_issues(params: SprintIssuesInput) -> str:
     """取得某專案目前 active sprint 的所有 issues。"""
     try:
         jql = f'project="{params.project_key}" AND sprint in openSprints() ORDER BY status ASC'
-        data = await jira_request("GET", "/search", params={
+        search_path = "/search/jql" if IS_CLOUD else "/search"
+        data = await jira_request("GET", search_path, params={
             "jql": jql, "maxResults": 100,
             "fields": "summary,status,assignee,priority",
         })
         return json.dumps({
-            "total": data.get("total"),
+            "total": data.get("total", len(data.get("issues", []))),
             "issues": [
                 {
                     "key":      i["key"],
                     "summary":  i["fields"].get("summary"),
-                    "status":   i["fields"].get("status", {}).get("name"),
+                    "status":   (i["fields"].get("status") or {}).get("name"),
                     "assignee": (i["fields"].get("assignee") or {}).get("displayName", "未指派"),
-                    "priority": i["fields"].get("priority", {}).get("name"),
+                    "priority": (i["fields"].get("priority") or {}).get("name"),
                 }
                 for i in data.get("issues", [])
             ],
