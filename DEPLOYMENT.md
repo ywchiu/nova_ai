@@ -12,9 +12,10 @@
 - [四、測試流程](#四測試流程)
 - [五、學員分發方式](#五學員分發方式)
 - [六、離線安裝方式](#六離線安裝方式)
-- [七、課堂時間安排建議](#七課堂時間安排建議)
-- [八、常見問題排除](#八常見問題排除)
-- [九、相關文件目錄](#九相關文件目錄)
+- [七、推送到客戶內部 BitBucket](#七推送到客戶內部-bitbucket)
+- [八、課堂時間安排建議](#八課堂時間安排建議)
+- [九、常見問題排除](#九常見問題排除)
+- [十、相關文件目錄](#十相關文件目錄)
 
 ---
 
@@ -58,15 +59,24 @@
 
 #### Step 1：取得程式碼
 
+依客戶網路環境，三種方式擇一：
+
 ```powershell
-# git clone（如果有 git）
+# 方式 1：從 GitHub clone（需要能連外網）
 git clone https://github.com/ywchiu/nova_ai.git
 cd nova_ai\mcp-servers
 
-# 或解壓縮 USB 裡的 zip
+# 方式 2：從客戶內部 BitBucket DC clone（講師事先推上去）
+git clone http://bitbucket.company.com/scm/NOVA/nova-ai-mcp.git
+cd nova-ai-mcp\mcp-servers
+
+# 方式 3：從 USB 解壓縮（完全離線）
 # 解壓 usb_package\nova_ai.zip 到 C:\Users\學員\nova_ai
 cd C:\Users\學員\nova_ai\mcp-servers
 ```
+
+> **推薦方式 2**：講師事先把程式碼推到客戶內部的 BitBucket，學員直接 clone，最穩定。
+> 見下方 [推送到客戶內部 BitBucket](#推送到客戶內部-bitbucket) 章節。
 
 #### Step 2：一鍵安裝
 
@@ -327,7 +337,86 @@ pip download -r requirements.txt -d packages-win --platform win_amd64 --python-v
 
 ---
 
-## 七、課堂時間安排建議
+## 七、推送到客戶內部 BitBucket
+
+如果客戶無法連到 GitHub，講師需要事先把程式碼推到客戶內部的 BitBucket Data Center。
+
+### 事前準備（講師到現場後做一次）
+
+#### Step 1：在客戶 BitBucket 建立 Repo
+
+請客戶 IT 或自己操作：
+
+1. 登入客戶的 BitBucket（`http://bitbucket.company.com`）
+2. 建立或選擇一個 Project（例如 `NOVA` 或 `TRAINING`）
+3. 在 Project 下建立 Repository，名稱 `nova-ai-mcp`
+4. 記下 clone URL（例如 `http://bitbucket.company.com/scm/NOVA/nova-ai-mcp.git`）
+
+#### Step 2：推送程式碼
+
+在你的電腦（有 GitHub 程式碼的那台）操作：
+
+```powershell
+cd nova_ai
+
+# 加上客戶 BitBucket 為第二個 remote
+git remote add customer http://bitbucket.company.com/scm/NOVA/nova-ai-mcp.git
+
+# 推送（會要求輸入客戶 BitBucket 的帳號密碼）
+git push customer main
+```
+
+如果你的電腦也連不到客戶 BitBucket（例如不在同一個網路），可以在客戶提供的 Windows 電腦上操作：
+
+```powershell
+# 從 USB 解壓
+# 解壓 usb_package\nova_ai.zip 到任意目錄
+cd nova_ai
+
+# 初始化 git 並推送到客戶 BitBucket
+git init
+git add -A
+git commit -m "Nova AI MCP Servers 課程教材"
+git remote add origin http://bitbucket.company.com/scm/NOVA/nova-ai-mcp.git
+git push -u origin main
+```
+
+#### Step 3：學員 clone
+
+推上去後，所有學員都可以從內部 BitBucket clone：
+
+```powershell
+git clone http://bitbucket.company.com/scm/NOVA/nova-ai-mcp.git
+cd nova-ai-mcp\mcp-servers
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1
+```
+
+### 自動化推送腳本
+
+也可以用這個 PowerShell 腳本一鍵推送：
+
+```powershell
+# push-to-customer-bb.ps1
+$BB_URL = Read-Host "客戶 BitBucket Repo URL（例如 http://bitbucket.company.com/scm/NOVA/nova-ai-mcp.git）"
+
+git remote remove customer 2>$null
+git remote add customer $BB_URL
+Write-Host "推送中..." -ForegroundColor Yellow
+git push customer main
+
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "`n推送成功！學員可以用以下指令 clone：" -ForegroundColor Green
+    Write-Host "  git clone $BB_URL" -ForegroundColor Cyan
+} else {
+    Write-Host "`n推送失敗，請確認 URL 和帳號密碼" -ForegroundColor Red
+}
+```
+
+---
+
+## 八、課堂時間安排建議
+
+> **講師到現場後的第一件事**：確認能不能連 GitHub。不能的話，先跑 `push-to-customer-bb.ps1` 把程式碼推到客戶內部 BitBucket。
 
 | 時間 | 動作 | 備註 |
 |------|------|------|
@@ -339,7 +428,7 @@ pip download -r requirements.txt -d packages-win --platform win_amd64 --python-v
 
 ---
 
-## 八、常見問題排除
+## 九、常見問題排除
 
 ### Python 找不到
 
@@ -408,7 +497,7 @@ BB_PAT="ATATT3xF...=1526544D"
 
 ---
 
-## 九、相關文件目錄
+## 十、相關文件目錄
 
 | 文件 | 路徑 | 說明 |
 |------|------|------|
@@ -416,6 +505,7 @@ BB_PAT="ATATT3xF...=1526544D"
 | 設定腳本 | [`mcp-servers/scripts/setup-env.ps1`](mcp-servers/scripts/setup-env.ps1) | 互動式產生 .env + Cline 設定 |
 | 連線測試 | [`mcp-servers/scripts/test-connection.ps1`](mcp-servers/scripts/test-connection.ps1) | 測試三個 MCP Server 連線 |
 | 全部測試 | [`mcp-servers/scripts/run-all-tests.ps1`](mcp-servers/scripts/run-all-tests.ps1) | 跑全部 pytest 測試 |
+| 推送到客戶 BB | [`mcp-servers/scripts/push-to-customer-bb.ps1`](mcp-servers/scripts/push-to-customer-bb.ps1) | 推送到客戶內部 BitBucket DC |
 | 學員批次檔 | [`mcp-servers/setup_student.bat`](mcp-servers/setup_student.bat) | 舊版 .bat 設定（僅 DC） |
 | 環境變數範本 | [`mcp-servers/.env.example`](mcp-servers/.env.example) | .env 範本 |
 | MCP 設定範本 | [`mcp-servers/cline_mcp_settings.json`](mcp-servers/cline_mcp_settings.json) | Cline MCP 設定範本 |
