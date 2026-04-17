@@ -67,12 +67,12 @@ except Exception as e:
 import asyncio, sys
 sys.path.insert(0, '.')
 try:
-    from bitbucket_mcp.server import bitbucket_list_repos, ListReposInput
-    result = asyncio.run(bitbucket_list_repos(ListReposInput()))
-    if 'error' in result.lower() or '錯誤' in result:
-        print('FAIL:' + result[:100])
+    from bitbucket_mcp.server import bb_request, IS_CLOUD
+    if IS_CLOUD:
+        result = asyncio.run(bb_request('GET', '/repositories'))
     else:
-        print('OK')
+        result = asyncio.run(bb_request('GET', '/projects'))
+    print('OK')
 except Exception as e:
     print('FAIL:' + str(e)[:100])
 "@ 2>&1

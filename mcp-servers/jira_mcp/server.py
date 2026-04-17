@@ -178,11 +178,13 @@ async def jira_get_issue(params: GetIssueInput) -> str:
             comments_count = comment_data.get("total", comment_data.get("count", 0))
         else:
             comments_count = 0
-        # sprint: customfield 可能不存在
-        sprint_list = f.get("customfield_10020")
+        # sprint: custom field ID 因 instance 而異，嘗試常見的幾個
         sprint_name = None
-        if isinstance(sprint_list, list) and sprint_list:
-            sprint_name = (sprint_list[0] or {}).get("name")
+        for cf in ["customfield_10020", "customfield_10007", "customfield_10004"]:
+            sprint_list = f.get(cf)
+            if isinstance(sprint_list, list) and sprint_list:
+                sprint_name = (sprint_list[0] or {}).get("name")
+                break
         return json.dumps({
             "key":         issue["key"],
             "summary":     f.get("summary"),
@@ -337,7 +339,9 @@ async def jira_list_projects() -> str:
 
 @mcp.tool(name="jira_get_sprint_issues")
 async def jira_get_sprint_issues(params: SprintIssuesInput) -> str:
-    """取得某專案目前 active sprint 的所有 issues。"""
+    """取得某專案目前 active sprint 的所有 issues。
+    注意：此功能需要 Jira Software（不是 Jira platform），openSprints() 才可用。
+    """
     try:
         jql = f'project="{params.project_key}" AND sprint in openSprints() ORDER BY status ASC'
         search_path = "/search/jql" if IS_CLOUD else "/search"
