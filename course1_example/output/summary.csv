@@ -1,0 +1,7 @@
+file,test_name,error_category,error_message,line_number,warning_message
+core_regression.log,test_boot_sequence,None,,2,"boot took 8.2s, above advisory threshold"
+core_regression.log,test_config_load,Environment,file not found: config/default.yaml,4,
+core_regression.log,test_license_checkout,Environment,license server not responding,6,
+i2c_regression.log,test_i2c_read,Data mismatch,expected 0x3A but got 0x00,2,
+i2c_regression.log,test_i2c_write,Data mismatch,expected 0x3A but got 0x00,4,
+i2c_regression.log,test_i2c_scan,None,,6,bus recovery took 3 retries
