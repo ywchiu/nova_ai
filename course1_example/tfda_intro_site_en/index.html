@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taiwan Food and Drug Administration (TFDA) - Introduction</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header Navigation -->
+  <header class="site-header">
+      <div class="container header-content">
+          <div class="logo-section">
+              <div class="logo">
+                  <div class="logo-icon">TFDA</div>
+                  <div class="logo-text">
+                      <h1>Taiwan Food and Drug Administration</h1>
+                      <span>Food and Drug Management, Department of Health, Executive Yuan</span>
+                  </div>
+              </div>
+          </div>
+          <nav class="main-nav">
+              <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+              </button>
+              <ul class="nav-links">
+                  <li><a href="#mission" class="nav-link">Mission</a></li>
+                  <li><a href="#business" class="nav-link">Business Areas</a></li>
+                  <li><a href="#services" class="nav-link">Services</a></li>
+                  <li><a href="#alerts" class="nav-link">Alerts</a></li>
+                  <li><a href="#news" class="nav-link">Announcements</a></li>
+                  <li><a href="#faq" class="nav-link">FAQ</a></li>
+                  <li><a href="#contact" class="nav-link">Contact</a></li>
+              </ul>
+          </nav>
+      </div>
+  </header>
+
+  <!-- Search Bar -->
+  <div class="search-bar-container">
+      <div class="container">
+          <div class="search-box">
+              <input type="text" id="searchInput" placeholder="Search the site..." aria-label="Search the site">
+              <button id="searchBtn" aria-label="Execute search">Search</button>
+              <div id="searchResults" class="search-results" role="alert" aria-live="polite"></div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Main Content -->
+  <main>
+      <!-- Hero Section: Agency Mission -->
+      <section id="mission" class="hero-section">
+          <div class="container">
+              <div class="hero-content">
+                  <h2>Agency Mission</h2>
+                  <p class="mission-desc">
+                       The Taiwan Food and Drug Administration (TFDA) is responsible for the safety management
+                       of food, drugs, medical devices, and cosmetics, protecting public health.
+                       We establish comprehensive regulatory frameworks based on science and centered on public health.
+                  </p>
+                  <div class="mission-highlights">
+                      <div class="highlight-card">
+                          <div class="highlight-icon">🛡️</div>
+                          <h3>Safety Oversight</h3>
+                          <p>Establishing rigorous safety management standards to ensure product quality</p>
+                      </div>
+                      <div class="highlight-card">
+                          <div class="highlight-icon">🔬</div>
+                          <h3>Science-Based</h3>
+                          <p>Formulating policies and regulations based on scientific evidence</p>
+                      </div>
+                      <div class="highlight-card">
+                          <div class="highlight-icon">🤝</div>
+                          <h3>International Integration</h3>
+                          <p>Participating in international organizations and sharing safety management experience</p>
+                      </div>
+                      <div class="highlight-card">
+                          <div class="highlight-icon">👥</div>
+                          <h3>Public-Focused</h3>
+                          <p>Public health and rights as our guiding principle</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Four Business Areas -->
+      <section id="business" class="business-section">
+          <div class="container">
+              <h2>Four Business Areas</h2>
+              <p class="section-desc">Comprehensive safety management for Food, Drugs, Medical Devices, and Cosmetics</p>
+                
+              <div class="business-tabs">
+                  <button class="tab-btn active" data-tab="food" aria-selected="true">
+                      <span class="tab-icon">🍽️</span>
+                      <span>Food Safety</span>
+                  </button>
+                  <button class="tab-btn" data-tab="drug" aria-selected="false">
+                      <span class="tab-icon">💊</span>
+                      <span>Drug Management</span>
+                  </button>
+                  <button class="tab-btn" data-tab="device" aria-selected="false">
+                      <span class="tab-icon">🏥</span>
+                      <span>Medical Devices</span>
+                  </button>
+                  <button class="tab-btn" data-tab="cosmetic" aria-selected="false">
+                      <span class="tab-icon">✨</span>
+                      <span>Cosmetics</span>
+                  </button>
+              </div>
+
+              <div class="business-content">
+                  <div class="tab-panel active" id="food-panel">
+                      <div class="business-grid">
+                          <div class="info-card">
+                              <h3>Food Regulatory Management</h3>
+                              <p>Establishing food-related regulations and standards to ensure food safety and protect consumer rights.</p>
+                              <ul class="info-list">
+                                  <li>Inspection standards for food and food products</li>
+                                  <li>Management of food additive usage regulations</li>
+                                  <li>Review of food ingredient and nutrition labeling</li>
+                              </ul>
+                          </div>
+                          <div class="info-card">
+                              <h3>Inspection and Monitoring</h3>
+                              <p>Implementing food market sampling and risk monitoring to ensure compliance with safety standards.</p>
+                              <ul class="info-list">
+                                  <li>Regular food market sampling programs</li>
+                                  <li>Imported food inspection and quarantine</li>
+                                  <li>Handling of food violation cases</li>
+                              </ul>
+                          </div>
+                          <div class="info-card">
+                              <h3>Labeling and Claims</h3>
+                              <p>Reviewing food labels and advertising claims to prevent false or exaggerated promotions.</p>
+                              <ul class="info-list">
+                                  <li>Review of food nutrition and efficacy labels</li>
+                                  <li>Legality assessment of advertising claims</li>
+                                  <li>Consumer information provision</li>
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="tab-panel" id="drug-panel">
+                      <div class="business-grid">
+                          <div class="info-card">
+                              <h3>Drug Review</h3>
+                              <p>Executing drug safety, efficacy, and quality reviews to ensure safe and effective medication.</p>
+                              <ul class="info-list">
+                                  <li>New drug application technical review</li>
+                                  <li>Drug manufacturing license review</li>
+                                  <li>Clinical trial plan approval</li>
+                              </ul>
+                          </div>
+                          <div class="info-card">
+                              <h3>Pharmacovigilance</h3>
+                              <p>Implementing adverse drug reaction monitoring and risk management measures.</p>
+                              <ul class="info-list">
+                                  <li>Adverse drug reaction reporting system</li>
+                                  <li>Drug safety risk assessment</li>
+                                  <li>Implementation of control measures when necessary</li>
+                              </ul>
+                          </div>
+                          <div class="info-card">
+                              <h3>Traditional Medicine</h3>
+                              <p>Establishing management standards for traditional medicine products.</p>
+                              <ul class="info-list">
+                                  <li>Traditional medicine application review</li>
+                                  <li>Traditional medicine product regulations</li>
+                                  <li>Scientific evidence collection and assessment</li>
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="tab-panel" id="device-panel">
+                      <div class="business-grid">
+                          <div class="info-card">
+                              <h3>Device Review</h3>
+                              <p>Executing medical device safety and efficacy review and management.</p>
+                              <ul class="info-list">
+                                  <li>Medical device application review</li>
+                                  <li>Technical document review and assessment</li>
+                                  <li>Clinical trial review</li>
+                              </ul>
+                          </div>
+                          <div class="info-card">
+                              <h3>Controlled Devices</h3>
+                              <p>Implementing stricter management measures for high-risk controlled devices.</p>
+                              <ul class="info-list">
+                                  <li>Controlled device license review</li>
+                                  <li>Post-market tracking of implantable devices</li>
+                                  <li>Adverse event handling</li>
+                              </ul>
+                          </div>
+                          <div class="info-card">
+                              <h3>IVD Management</h3>
+                              <p>Managing the quality and safety of in vitro diagnostic medical devices.</p>
+                              <ul class="info-list">
+                                  <li>IVD device review</li>
+                                  <li>Quality system inspection</li>
+                                  <li>Market surveillance</li>
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="tab-panel" id="cosmetic-panel">
+                      <div class="business-grid">
+                          <div class="info-card">
+                              <h3>Cosmetic Review</h3>
+                              <p>Executing safety assessment and review management for cosmetics before market release.</p>
+                              <ul class="info-list">
+                                  <li>Pre-market cosmetic registration</li>
+                                  <li>Ingredient safety assessment</li>
+                                  <li>Label and claim review</li>
+                              </ul>
+                          </div>
+                          <div class="info-card">
+                              <h3>Market Surveillance</h3>
+                              <p>Implementing cosmetic market sampling and handling violation cases.</p>
+                              <ul class="info-list">
+                                  <li>Regular market product sampling</li>
+                                  <li>Handling of violation cases</li>
+                                  <li>Consumer complaint processing</li>
+                              </ul>
+                          </div>
+                          <div class="info-card">
+                              <h3>Ingredient Management</h3>
+                              <p>Managing allowable and prohibited ingredients in cosmetics.</p>
+                              <ul class="info-list">
+                                  <li>Updates to allowable ingredient lists</li>
+                                  <li>Assessment of new technology ingredients</li>
+                                  <li>International regulation tracking</li>
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Public Service Portals -->
+      <section id="services" class="services-section">
+          <div class="container">
+              <h2>Public Service Portals</h2>
+              <p class="section-desc">Provid diverse service channels for convenient public access to information</p>
+              <div class="service-ports">
+                  <a href="#" class="service-port-card" tabindex="0">
+                      <div class="port-icon">📋</div>
+                      <h3>Food License Application</h3>
+                      <p>Single window for food industry license applications</p>
+                      <span class="port-link">Go to service →</span>
+                  </a>
+                  <a href="#" class="service-port-card" tabindex="0">
+                      <div class="port-icon">💉</div>
+                      <h3>Drug Information</h3>
+                      <p>Query drug registration and inspection information</p>
+                      <span class="port-link">Go to service →</span>
+                  </a>
+                  <a href="#" class="service-port-card" tabindex="0">
+                      <div class="port-icon">🔍</div>
+                      <h3>Food Query Network</h3>
+                      <p>Query food product registration and market information</p>
+                      <span class="port-link">Go to service →</span>
+                  </a>
+                  <a href="#" class="service-port-card" tabindex="0">
+                      <div class="port-icon">📞</div>
+                      <h3>Complaint Hotline</h3>
+                      <p>24-hour complaint hotline and online complaint system</p>
+                      <span class="port-link">Go to service →</span>
+                  </a>
+                  <a href="#" class="service-port-card" tabindex="0">
+                      <div class="port-icon">📊</div>
+                      <h3>Public Information</h3>
+                      <p>Query regulations, rules, and statistical data</p>
+                      <span class="port-link">Go to service →</span>
+                  </a>
+                  <a href="#" class="service-port-card" tabindex="0">
+                      <div class="port-icon">📱</div>
+                      <h3>Mobile Services</h3>
+                      <p>Mobile applications and mobile services</p>
+                      <span class="port-link">Go to service →</span>
+                  </a>
+              </div>
+          </div>
+      </section>
+
+      <!-- Safety Alerts -->
+      <section id="alerts" class="alerts-section">
+          <div class="container">
+              <h2>Safety Alerts</h2>
+              <p class="section-desc">Stay informed about important food and drug safety information</p>
+              <div class="alerts-grid">
+                  <div class="alert-card food-alert">
+                      <div class="alert-badge">Food Safety</div>
+                      <h3>Imported Food Inspection Announcement</h3>
+                      <p class="alert-date">January 15, 2024</p>
+                      <p>New imported food inspection measures announced, strengthening inspection standards for products from specific countries. Businesses are requested to comply.</p>
+                      <a href="#" class="alert-link">Learn more</a>
+                  </div>
+                  <div class="alert-card drug-alert">
+                      <div class="alert-badge">Drug Safety</div>
+                      <h3>Adverse Drug Reaction Reminder</h3>
+                      <p class="alert-date">January 10, 2024</p>
+                      <p>Reminder to healthcare institutions and pharmacies to strengthen reporting of adverse drug reactions to ensure medication safety.</p>
+                      <a href="#" class="alert-link">Learn more</a>
+                  </div>
+                  <div class="alert-card food-alert">
+                      <div class="alert-badge">Food Safety</div>
+                      <h3>Market Food Sampling Results</h3>
+                      <p class="alert-date">January 5, 2024</p>
+                      <p>This month's market food sampling results are published. Please refer to the list of non-compliant products.</p>
+                      <a href="#" class="alert-link">Learn more</a>
+                  </div>
+                  <div class="alert-card drug-alert">
+                      <div class="alert-badge">Drug Safety</div>
+                      <h3>Medical Device Safety Notice</h3>
+                      <p class="alert-date">January 2, 2024</p>
+                      <p>Safety reminders issued for specific medical devices. Healthcare institutions are requested to comply.</p>
+                      <a href="#" class="alert-link">Learn more</a>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Latest Announcements -->
+      <section id="news" class="news-section">
+          <div class="container">
+              <h2>Latest Announcements</h2>
+              <p class="section-desc">Stay updated with the latest policies and regulations</p>
+                
+              <div class="news-filters">
+                  <button class="filter-btn active" data-filter="all">All</button>
+                  <button class="filter-btn" data-filter="food">Food</button>
+                  <button class="filter-btn" data-filter="drug">Drugs</button>
+                  <button class="filter-btn" data-filter="device">Devices</button>
+                  <button class="filter-btn" data-filter="cosmetic">Cosmetics</button>
+              </div>
+
+              <div class="news-list" id="newsList">
+                  <div class="news-item" data-category="food">
+                      <div class="news-date">2024-01-15</div>
+                      <div class="news-category-badge food-badge">Food</div>
+                      <div class="news-content">
+                      <h3>2024 Food Business Registration Guidelines Revised</h3>
+                      <p>To accommodate adjustments to the food product registration system, the administration has revised the food business registration guidelines, effective February 1, 2024.</p>
+                          <a href="#" class="news-link">Read full text →</a>
+                      </div>
+                  </div>
+                  <div class="news-item" data-category="drug">
+                      <div class="news-date">2024-01-12</div>
+                      <div class="news-category-badge drug-badge">Drugs</div>
+                      <div class="news-content">
+                          <h3>New Drug Review Process Optimization</h3>
+                          <p>To accelerate new drug market entry, the administration has optimized the technical review process, reducing review time by approximately 20%.</p>
+                          <a href="#" class="news-link">Read full text →</a>
+                      </div>
+                  </div>
+                  <div class="news-item" data-category="device">
+                      <div class="news-date">2024-01-08</div>
+                      <div class="news-category-badge device-badge">Devices</div>
+                      <div class="news-content">
+                          <h3>Controlled Device License Review Procedure Updated</h3>
+                          <p>The controlled device license review procedure has been updated. Businesses should prepare application documents according to the latest regulations.</p>
+                          <a href="#" class="news-link">Read full text →</a>
+                      </div>
+                  </div>
+                  <div class="news-item" data-category="cosmetic">
+                      <div class="news-date">2024-01-05</div>
+                      <div class="news-category-badge cosmetic-badge">Cosmetics</div>
+                      <div class="news-content">
+                          <h3>Cosmetic Ingredient List Updated</h3>
+                          <p>The 2024 prohibited and restricted cosmetic ingredient list has been updated. Businesses should adjust product formulations accordingly.</p>
+                          <a href="#" class="news-link">Read full text →</a>
+                      </div>
+                  </div>
+                  <div class="news-item" data-category="food">
+                      <div class="news-date">2024-01-02</div>
+                      <div class="news-category-badge food-badge">Food</div>
+                      <div class="news-content">
+                          <h3>Imported Food Inspection Adjustments</h3>
+                          <p>In response to international pandemic changes, inspection items and standards for specific country imports have been adjusted.</p>
+                          <a href="#" class="news-link">Read full text →</a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Frequently Asked Questions -->
+      <section id="faq" class="faq-section">
+          <div class="container">
+              <h2>Frequently Asked Questions</h2>
+              <p class="section-desc">Answers to commonly asked questions</p>
+                
+              <div class="faq-list" id="faqList">
+                  <div class="faq-item">
+                      <button class="faq-question" aria-expanded="false">
+                          <span class="faq-question-text">How do food businesses register?</span>
+                          <span class="faq-icon" aria-hidden="true">+</span>
+                      </button>
+                      <div class="faq-answer" role="region">
+                          <p>Food businesses can register online through the "Food Business Service Platform." Please prepare company registration documents, food operation descriptions, and the responsible person's identification. After completion, you will receive a unique identification number for subsequent license applications.</p>
+                          <a href="#" class="faq-link">Learn more →</a>
+                      </div>
+                  </div>
+                  <div class="faq-item">
+                      <button class="faq-question" aria-expanded="false">
+                          <span class="faq-question-text">How can I query drug inspection information?</span>
+                          <span class="faq-icon" aria-hidden="true">+</span>
+                      </button>
+                      <div class="faq-answer" role="region">
+                          <p>Members of the public can query information on approved drugs through the "Drug Inspection Information Network." Enter the drug license number or drug name to query detailed information including ingredients, dosage, and indications.</p>
+                          <a href="#" class="faq-link">Learn more →</a>
+                      </div>
+                  </div>
+                  <div class="faq-item">
+                      <button class="faq-question" aria-expanded="false">
+                          <span class="faq-question-text">What documents are needed to apply for a medical device license?</span>
+                          <span class="faq-icon" aria-hidden="true">+</span>
+                      </button>
+                      <div class="faq-answer" role="region">
+                          <p>To apply for a medical device license, you need to prepare an application form, technical documents, clinical trial data (if applicable), quality management documents, and label samples. Controlled devices also require a risk management report.</p>
+                          <a href="#" class="faq-link">Learn more →</a>
+                      </div>
+                  </div>
+                  <div class="faq-item">
+                      <button class="faq-question" aria-expanded="false">
+                          <span class="faq-question-text">How can I report food or drug violations?</span>
+                          <span class="faq-icon" aria-hidden="true">+</span>
+                      </button>
+                      <div class="faq-answer" role="region">
+                          <p>Members of the public can report through the 24-hour complaint hotline at 0800-000000, or use the online complaint system. Please provide specific evidence, including product name, manufacturer, and details of the violation, to facilitate investigation.</p>
+                          <a href="#" class="faq-link">Learn more →</a>
+                      </div>
+                  </div>
+                  <div class="faq-item">
+                      <button class="faq-question" aria-expanded="false">
+                          <span class="faq-question-text">Do cosmetics need pre-market registration?</span>
+                          <span class="faq-icon" aria-hidden="true">+</span>
+                      </button>
+                      <div class="faq-answer" role="region">
+                          <p>Yes, as of 2022, all cosmetics released to market must complete pre-market registration. Submit product ingredients, safety assessment, and label data through the "Cosmetic Registration System." Products can only be sold after registration is completed.</p>
+                          <a href="#" class="faq-link">Learn more →</a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Contact Information -->
+      <section id="contact" class="contact-section">
+          <div class="container">
+              <h2>Contact and Application Information</h2>
+              <p class="section-desc">Welcome to reach out to us through the following channels</p>
+                
+              <div class="contact-grid">
+                  <div class="contact-card">
+                      <div class="contact-icon">📍</div>
+                      <h3>Office Address</h3>
+                      <p>No. 60, Heping West Rd. Sec. 1, Taipei</p>
+                      <p class="contact-detail">Building 1 (near Taipei MRT Dongmen Station)</p>
+                  </div>
+                  <div class="contact-card">
+                      <div class="contact-icon">📞</div>
+                      <h3>Phone</h3>
+                      <p>Service line: (02) 2395-7000</p>
+                      <p class="contact-detail">24-hour complaint hotline: 0800-000000</p>
+                  </div>
+                  <div class="contact-card">
+                      <div class="contact-icon">📧</div>
+                      <h3>Email</h3>
+                      <p>General inquiries: tfdainfo@health.gov.tw</p>
+                      <p class="contact-detail">Complaint email: service@gov.tw</p>
+                  </div>
+                  <div class="contact-card">
+                      <div class="contact-icon">🕐</div>
+                      <h3>Service Hours</h3>
+                      <p>Monday to Friday 09:00-17:00</p>
+                      <p class="contact-detail">Excluding national holidays</p>
+                  </div>
+              </div>
+
+              <div class="application-section">
+                  <h3>Online Application Services</h3>
+                  <div class="application-cards">
+                      <a href="#" class="application-card">
+                          <div class="app-icon">📋</div>
+                          <h4>Food License Application</h4>
+                          <p>Submit food-related license applications online</p>
+                      </a>
+                      <a href="#" class="application-card">
+                          <div class="app-icon">💊</div>
+                          <h4>Drug License Application</h4>
+                          <p>New drug and generic drug application review</p>
+                      </a>
+                      <a href="#" class="application-card">
+                          <div class="app-icon">🏥</div>
+                          <h4>Medical Device Application</h4>
+                          <p>Medical device license review</p>
+                      </a>
+                      <a href="#" class="application-card">
+                          <div class="app-icon">✨</div>
+                          <h4>Cosmetic Registration</h4>
+                          <p>Pre-market cosmetic registration</p>
+                      </a>
+                  </div>
+              </div>
+          </div>
+      </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+      <div class="container">
+          <div class="footer-content">
+              <div class="footer-section">
+                  <h4>Taiwan Food and Drug Administration</h4>
+                  <p>Food and Drug Management, Department of Health, Executive Yuan</p>
+                  <p>No. 60, Heping West Rd. Sec. 1, Taipei City 10001, Taiwan</p>
+                  <p>Phone: (02) 2395-7000</p>
+              </div>
+              <div class="footer-section">
+                  <h4>Quick Links</h4>
+                  <ul class="footer-links">
+                      <li><a href="#mission">Mission</a></li>
+                      <li><a href="#business">Business Areas</a></li>
+                      <li><a href="#services">Services</a></li>
+                      <li><a href="#news">Announcements</a></li>
+                  </ul>
+              </div>
+              <div class="footer-section">
+                  <h4>Related Resources</h4>
+                  <ul class="footer-links">
+                      <li><a href="#">Department of Health, Executive Yuan</a></li>
+                      <li><a href="#">Food Industry Development Council</a></li>
+                      <li><a href="#">National Food Safety Platform</a></li>
+                      <li><a href="#">Government Open Data Platform</a></li>
+                  </ul>
+              </div>
+          </div>
+          <div class="footer-bottom">
+              <p class="disclaimer">⚠️ This is an educational demonstration website, not the official Taiwan Food and Drug Administration website. Content is for learning reference only and does not constitute legal basis.</p>
+              <p class="copyright">© 2024 Educational Demonstration Website | Built with pure HTML/CSS/Vanilla JS</p>
+          </div>
+      </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

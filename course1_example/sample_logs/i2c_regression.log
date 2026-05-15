@@ -1,0 +1,6 @@
+2026-05-10 10:00:01 [FAIL] test_i2c_read
+2026-05-10 10:00:02 ERROR: expected 0x3A but got 0x00
+2026-05-10 10:01:01 [FAIL] test_i2c_write
+2026-05-10 10:01:02 ERROR: expected 0x3A but got 0x00
+2026-05-10 10:02:01 [PASS] test_i2c_scan
+2026-05-10 10:02:02 WARNING: bus recovery took 3 retries

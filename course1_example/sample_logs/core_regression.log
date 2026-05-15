@@ -1,0 +1,6 @@
+2026-05-10 09:00:01 [PASS] test_boot_sequence
+2026-05-10 09:00:02 WARNING: boot took 8.2s, above advisory threshold
+2026-05-10 09:01:10 [FAIL] test_config_load
+2026-05-10 09:01:11 ERROR: file not found: config/default.yaml
+2026-05-10 09:02:20 [FAIL] test_license_checkout
+2026-05-10 09:02:21 ERROR: license server not responding
