@@ -45,9 +45,3 @@ FIFO 可以先理解成「排隊等處理的資料盒子」。資料一直進來
 
 建議在 Cline 使用 Plan 模式先跑一次，並在 prompt 裡保留「不要修改檔案、不要呼叫 MCP / 外部系統」的限制。
 
-## 講法建議
-
-1. Bug Report 與 Test Plan 先用來建立「不要直接改、先整理 artifact」的心智模型。
-2. FIFO 三個案例再銜接 Issue、PR、CI/CD 流程再造。
-3. 每個案例都要保留人類決策點：bug 不直接修、test plan 不腦補規格、Issue 不自動定需求、PR 不自動 merge、CI 不自動 deploy。
-4. 現場示範時先用範例文字跑一次，再請學員替換成自己團隊的 bug report、規格片段、Issue、PR diff 或 CI log。
