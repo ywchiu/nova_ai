@@ -1,13 +1,6 @@
 # Course 2 範例包｜投影片可貼用案例
 
-對應最終版投影片：
-
-- `slides/20260518 從 Vibe Coding 到 Agentic Engineering：AI 原生開發流程實戰.pptx`
-- `slides/20260518 從 Vibe Coding 到 Agentic Engineering：AI 原生開發流程實戰.pdf`
-
-這個資料夾放的是課堂中可直接貼到 Cline / Roo / Claude Code 類工具示範的案例。前兩個對應前段 Cline 基本操作與 test plan，後三個對應第 110 頁之後的 FIFO 流程再造案例。
-
-## 白話版情境總覽
+## 情境總覽
 
 這五個範例不是要教大家 IC 設計細節，而是示範「不要把模糊問題直接丟給 AI 改 code」。你可以把它想成一般軟體開發流程：
 
