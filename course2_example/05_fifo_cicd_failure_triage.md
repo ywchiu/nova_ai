@@ -12,6 +12,12 @@
 
 FIFO overflow 相關 PR 送出後，Jenkins regression 失敗。舊流程是工程師自己翻 console log；新流程是 Agent 先整理失敗摘要、證據、可能根因與下一步，但不自動 deploy、不自動改 pipeline。
 
+### 白話說明
+
+這個例子是在模擬自動測試失敗。你可以把 Jenkins 想成每次有人改 code 後，自動跑一輪檢查的機器。它失敗時會吐出很長的 log，但 reviewer 不一定馬上知道重點在哪。
+
+AI 在這裡的工作是先把 log 翻成「人看得懂的摘要」：哪幾個測試掛了、錯誤訊息說什麼、可能跟哪個 commit 有關、下一步該找誰確認。它不應該自己重跑 build、改 pipeline 或 deploy，因為 CI/CD 牽涉到外部系統和正式流程。
+
 ---
 
 ## 模擬 CI Log
@@ -127,9 +133,3 @@ yes
   "requires_human_approval": true
 }
 ```
-
----
-
-## 講師提醒
-
-這個例子要強調：CI/CD Agent 初期最好只做「診斷與通知」。觸發 build、改 pipeline、rollback、deploy 都應該有更嚴格的權限與人工確認。
