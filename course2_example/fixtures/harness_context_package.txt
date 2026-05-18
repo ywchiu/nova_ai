@@ -1,0 +1,24 @@
+Task:
+根據 reset / enable / busy 三段規格，整理 test plan 初稿。
+
+Spec:
+- reset_n = 0 時，所有輸出應回到預設值
+- enable = 1 時，模組開始處理輸入資料
+- busy = 1 時，不應接受新的 start command
+
+Existing naming examples:
+- test_dut_reset_outputs_default
+- test_dut_enable_starts_processing
+- test_dut_busy_rejects_start_command
+
+Project memory:
+- reset 行為必須有獨立 test case
+- busy 狀態下的 start command 必須測試
+- 規格未定義的 timing 不可自行腦補
+- 設計行為變更必須人工確認
+
+Guardrails:
+- 不要修改 RTL
+- 不要修改正式 testbench
+- 不要把模糊規格寫成確定行為
+- 模糊點必須標記為「需人工確認」
