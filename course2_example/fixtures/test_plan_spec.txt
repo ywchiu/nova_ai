@@ -1,0 +1,23 @@
+Spec fragment:
+
+1. When reset_n = 0, all outputs must return to their default values.
+2. When enable = 1, the module starts processing input data.
+3. When busy = 1, the module must not accept a new start command.
+
+Known interface names:
+- reset_n
+- enable
+- busy
+- start
+- data_in
+- data_out
+- valid_out
+
+Unclear spec items:
+- Output default values are not listed in this fragment.
+- Reset may be synchronous or asynchronous; not specified here.
+- Busy may be a pulse or sticky state; not specified here.
+- "Starts processing" does not define the observable signal or timing.
+
+Request:
+Draft a test plan table only. Do not write RTL or testbench code.

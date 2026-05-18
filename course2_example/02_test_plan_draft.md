@@ -16,6 +16,8 @@
 當 busy = 1 時，不應接受新的 start command。
 ```
 
+同一份規格片段也可從 `fixtures/test_plan_spec.txt` 載入，方便示範 `@file` 或從規格文件摘錄段落時的做法。
+
 ---
 
 ## 可直接貼給 AI 的 Prompt
@@ -29,6 +31,9 @@
 當 reset_n = 0 時，所有輸出應回到預設值。
 當 enable = 1 時，模組開始處理輸入資料。
 當 busy = 1 時，不應接受新的 start command。
+
+如果使用 @file 示範，請改讀：
+fixtures/test_plan_spec.txt
 
 請用表格輸出：
 1. Test Case 名稱

@@ -1,0 +1,24 @@
+Bug report:
+data_out occasionally becomes 0 during normal operation.
+
+Observed behavior:
+- Test seed: 42
+- Module under test: data_path_top
+- Symptom: data_out is expected to keep the processed value, but becomes 0 for one cycle.
+- The issue appears after enable is asserted and before the next start command.
+
+Known signal snapshot:
+- reset_n = 1
+- enable = 1
+- busy = 0
+- valid_out = 1
+- data_out = 0x00000000
+
+Missing information:
+- Formal expected behavior for data_out when valid_out = 1
+- Waveform around the failing cycle
+- Whether data_out = 0 is legal for this input transaction
+- Whether reset, enable gating, or scoreboard logic changed recently
+
+Request:
+Please triage this bug report first. Do not modify RTL or tests yet.

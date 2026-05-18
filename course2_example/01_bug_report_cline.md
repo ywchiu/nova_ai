@@ -16,6 +16,8 @@
 幫我修這個 data_out 偶爾為 0 的 bug。你覺得怎麼改就直接改。
 ```
 
+同一份稍微完整的 bug report 草稿也可從 `fixtures/bug_report.txt` 載入，方便示範 `@file` 或複製外部 bug report 時的做法。
+
 這種指令容易讓 Agent 直接改很多檔案，卻沒有重現條件、沒有 regression test，也沒有保留設計行為邊界。這個範例的重點是：先把 bug report 整理成可驗證的 debug contract。
 
 ---
@@ -27,6 +29,9 @@
 
 Bug report:
 data_out 偶爾為 0，請修一下。
+
+如果使用 @file 示範，請改讀：
+fixtures/bug_report.txt
 
 請輸出：
 1. 已知現象

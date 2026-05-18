@@ -17,12 +17,14 @@
 | `04_fifo_pr_review_checklist.md` | FIFO PR 流程：AI 預審 + 人類確認 | 113-118 | 第 115 頁貼 prompt；第 116/118 頁對照 Review Checklist 與 Summary-first |
 | `05_fifo_cicd_failure_triage.md` | FIFO CI/CD 流程：Agent 進入回饋迴圈 | 119-121 | 第 120 頁貼 prompt；第 121 頁講 Agent 與 CI 雙向流程 |
 
-## Fixture 資料
+## 範例資料
 
-FIFO 三個範例都可以直接整段貼到 Cline。若課堂上想示範 `@file` 或 MCP 不通時的 fallback，可改用以下獨立 fixture：
+五個範例都可以直接整段貼到 Cline。若課堂上想示範 `@file`、複製外部 artifact，或 MCP 不通時的 fallback，可改用以下獨立 fixture：
 
 | Fixture | 對應範例 | 用途 |
 |---|---|---|
+| `fixtures/bug_report.txt` | `01_bug_report_cline.md` | 模擬 bug report 草稿 |
+| `fixtures/test_plan_spec.txt` | `02_test_plan_draft.md` | 模擬規格片段 |
 | `fixtures/issue_draft.txt` | `03_fifo_issue_agent_contract.md` | 模糊 Issue 草稿 |
 | `fixtures/fifo_overflow_pr.diff` | `04_fifo_pr_review_checklist.md` | 模擬 PR diff |
 | `fixtures/jenkins_failure.log` | `05_fifo_cicd_failure_triage.md` | 模擬 Jenkins 失敗 log |
