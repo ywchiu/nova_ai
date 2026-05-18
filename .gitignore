@@ -24,6 +24,7 @@ Thumbs.db
 
 # Slides (本地產出，不入 commit)
 slides/
+docs/
 
 # 投影片建構腳本（本地用）
 scripts/build_revised_pptx.py
