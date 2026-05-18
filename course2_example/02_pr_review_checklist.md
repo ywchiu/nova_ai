@@ -23,6 +23,8 @@ PR 修改了 FIFO overflow 行為，但 reviewer 不確定：
 
 ## 模擬 PR Diff
 
+也可用 `fixtures/fifo_overflow_pr.diff` 當 `@file` 載入。
+
 ```diff
 diff --git a/rtl/fifo_controller.sv b/rtl/fifo_controller.sv
 @@
@@ -67,6 +69,8 @@ PR diff:
 ## Verdict
 
 限制：
+- 不要修改任何檔案
+- 不要呼叫 Git / BitBucket / MCP / 外部系統
 - 不可以自行決定 overflow 正確行為
 - 不可以批准 merge
 - 不可以把模糊規格寫成確定結論
@@ -111,4 +115,3 @@ PR diff:
 ## 講師提醒
 
 這個例子要強調：AI Review 的定位是「預審」與「整理證據」，不是取代 reviewer。真正的設計取捨仍然由人決定。
-

@@ -16,6 +16,8 @@ Jenkins 跑完 regression 後失敗。舊流程是工程師自己翻 console log
 
 ## 模擬 CI Log
 
+也可用 `fixtures/jenkins_failure.log` 當 `@file` 載入。
+
 ```text
 Jenkins job: chip-validator-ci-fail
 Build: #42
@@ -57,8 +59,11 @@ Jenkins log:
 7. 可給通知系統使用的 JSON
 
 限制：
+- 不要修改任何檔案
+- 不要呼叫 Jenkins / Git / MCP / 外部系統
 - 低信心不得寫成確定結論
 - 必須引用 log evidence
+- 不可重跑 build
 - 不可建議自動 deploy
 - 如涉及 spec 上限變更，必須要求人工確認
 ```
@@ -121,4 +126,3 @@ yes
 ## 講師提醒
 
 這個例子要強調：CI/CD Agent 初期最好只做「診斷與通知」。觸發 build、改 pipeline、rollback、deploy 都應該有更嚴格的權限與人工確認。
-

@@ -16,6 +16,8 @@
 FIFO overflow behavior 有問題，請修一下。
 ```
 
+同一份草稿也可從 `fixtures/issue_draft.txt` 載入，方便示範 `@file` 或 MCP 不通時的 fallback。
+
 這種需求不能直接丟給 coding agent，因為規格不明、驗收條件不明、測試也不明。Issue Agent 的責任是先把需求變成可討論、可驗收、可交接的契約。
 
 ---
@@ -41,6 +43,8 @@ FIFO overflow behavior 有問題，請修一下。
 7. Ready for Coding: yes/no
 
 限制：
+- 不要修改任何檔案
+- 不要呼叫 Jira / Git / MCP / 外部系統
 - 不可以自行決定 overflow 時應該 drop、stall 或 overwrite
 - Acceptance Criteria 必須可被測試驗證
 - 模糊點要保留在「需人工確認」中
@@ -102,4 +106,3 @@ no
 ## 講師提醒
 
 這個例子要強調：AI 不決定需求，AI 幫你把需求整理到「可以被人類決策」的狀態。
-

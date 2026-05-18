@@ -1,0 +1,12 @@
+diff --git a/rtl/fifo_controller.sv b/rtl/fifo_controller.sv
+@@
+-assign overflow_flag = write_en && fifo_full;
++assign overflow_flag = write_en && fifo_full && !read_en;
+
+@@
+-if (write_en && fifo_full) begin
+-  drop_input <= 1'b1;
+-end
++if (write_en && fifo_full && read_en) begin
++  write_ptr <= write_ptr + 1'b1;
++end
