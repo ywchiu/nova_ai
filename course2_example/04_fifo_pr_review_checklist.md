@@ -1,4 +1,4 @@
-# 範例 2｜PR Review Agent：AI 預審 + 人類確認
+# 範例 4｜FIFO PR Review Agent：AI 預審 + 人類確認
 
 對應投影片：第 108、113-118 頁
 

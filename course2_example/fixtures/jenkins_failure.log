@@ -1,16 +1,21 @@
-Jenkins job: chip-validator-ci-fail
+Jenkins job: fifo-regression
 Build: #42
 Result: FAILURE
 
-[Stage] Inject Bug
-sed -i.bak 's/CLOCK_MAX_MHZ = 800.0/CLOCK_MAX_MHZ = 100.0/' chip_validator/validator.py
+[Stage] Checkout
+Branch: feature/fifo-overflow-behavior
+Commit: 9f8a7c1 adjust FIFO overflow behavior when read_en is high
 
 [Stage] Test
-FAILED tests/test_validator.py::TestClockFrequency::test_valid_clock_frequency
-FAILED tests/test_validator.py::TestClockFrequency::test_clock_boundary_max
+FAILED tests/fifo/test_overflow.py::test_fifo_overflow_flag_full_write
+FAILED tests/fifo/test_overflow.py::test_fifo_full_write_read_same_cycle
 
-E AssertionError: expected no validation error for 200 MHz
-E ValidationError(rule='clock_frequency', message='clock 200 MHz exceeds max 100 MHz')
+E AssertionError: expected overflow_flag=1 when fifo_full=1 and write_en=1
+E Observed overflow_flag=0 because read_en=1
 
-[Stage] Cleanup
-restored chip_validator/validator.py from .bak
+E AssertionError: expected write_ptr to remain stable on overflow
+E Observed write_ptr advanced during full + write_en + read_en
+
+[Stage] Artifacts
+waveform: artifacts/fifo_overflow_build42.vcd
+test_report: artifacts/fifo_regression_build42.xml
